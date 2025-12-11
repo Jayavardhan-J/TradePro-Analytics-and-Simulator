@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+body {
+  background-color: #0a0a0c;
+  color: #e4e4e7;
+}
+
+/* --- RECHARTS FIX --- */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-layer,
+.recharts-bar-rectangle,
+.recharts-sector,
+path.recharts-rectangle {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+*:focus,
+*:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* --- SCROLLBAR STYLING FIX --- */
+
+/* Width */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+/* Track (The background of the scrollbar) */
+::-webkit-scrollbar-track {
+  background: #18181b; /* Matches your card bg */
+  border-radius: 4px;
+}
+
+/* Handle (The moving part) */
+::-webkit-scrollbar-thumb {
+  background: #3f3f46; /* A subtle dark gray */
+  border-radius: 4px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #52525b; /* Slightly lighter on hover */
+}
+
+/* Firefox fallback (optional, as Firefox handles scrollbars differently) */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3f3f46 #18181b;
+}
