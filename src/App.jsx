@@ -1,33 +1,24 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import MarketOverview from './pages/MarketOverview';
 import Dashboard from './pages/Dashboard';
-import MarketOverview from './pages/MarketOverview'; // Import the new page
+import { LiveProvider } from './context/LiveContext'; // Import this
 
-// Placeholder
-const ComingSoon = ({ title }) => (
-  <div className="flex items-center justify-center h-[50vh] text-gray-500">
-    {title} - Coming Soon
-  </div>
-);
-
-function App() {
+const App = () => {
   return (
-    <Router>
-      <Layout>
-        <Routes>
-          {/* New Home Page */}
-          <Route path="/" element={<MarketOverview />} />
-          
-          {/* Your Sector Dashboard moved here */}
-          <Route path="/sectors" element={<Dashboard />} />
-          
-          <Route path="/screeners" element={<ComingSoon title="Screeners" />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Layout>
-    </Router>
+    <LiveProvider> {/* Wrap everything here */}
+      <Router>
+        <Layout>
+          <Routes>
+            <Route path="/" element={<MarketOverview />} />
+            <Route path="/sectors" element={<Dashboard />} />
+            <Route path="/screeners" element={<div className="p-10 text-gray-400">Screeners Coming Soon</div>} />
+          </Routes>
+        </Layout>
+      </Router>
+    </LiveProvider>
   );
-}
+};
 
 export default App;
