@@ -11,13 +11,11 @@ const HeaderTickerItem = ({ name, value, change, changePer }) => {
     <div className="flex-shrink-0 flex flex-col justify-center px-5 py-2 bg-[#18181b] border border-gray-800 rounded-xl min-w-[240px] relative overflow-hidden group/item hover:border-gray-600 transition-all duration-300 shadow-md cursor-pointer mx-3">
       <div className={`absolute top-0 right-0 w-16 h-16 rounded-full blur-[30px] opacity-20 group-hover/item:opacity-40 transition-opacity ${isPositive ? 'bg-emerald-500' : 'bg-rose-500'}`}></div>
       
-      {/* Top Row */}
       <div className="flex justify-between items-center mb-1 relative z-10">
         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate pr-2">{name}</span>
         {isPositive ? <TrendingUp size={16} className="text-emerald-400" /> : <TrendingDown size={16} className="text-rose-400" />}
       </div>
 
-      {/* Bottom Row */}
       <div className="flex items-baseline justify-between gap-4 relative z-10">
         <span className="text-xl font-bold text-gray-100 tracking-tight leading-none">
           {value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
@@ -46,6 +44,7 @@ const Layout = ({ children }) => {
   const [indices, setIndices] = useState([]);
   const [isMarketHours, setIsMarketHours] = useState(false);
 
+  // Time helper (9:13 AM - 3:30 PM)
   const checkTimeWindow = () => {
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -63,6 +62,7 @@ const Layout = ({ children }) => {
   };
 
   const fetchIndices = useCallback(async (force = false) => {
+    // Guard: Only fetch if forced (initial load) OR if time window is valid
     if (!force && !checkTimeWindow()) return;
 
     try {
@@ -96,13 +96,19 @@ const Layout = ({ children }) => {
       }
     };
 
+    // 1. Initial Load (Runs once)
     checkMarketStatus();
-    fetchIndices(true); 
+    fetchIndices(true); // Force fetch once so header isn't empty
 
+    // 2. Status Interval (Updates text)
     const statusTimer = setInterval(checkMarketStatus, 10000);
+    
+    // 3. Data Polling Interval
     let dataTimer;
     
-    if (isMarketHours || isLive) { 
+    // FIX: Only start polling if isLive is TRUE.
+    // (Note: isLive can only be true if isMarketHours is true, due to the effect below)
+    if (isLive) { 
         dataTimer = setInterval(() => fetchIndices(false), 5000);
     }
 
@@ -112,14 +118,16 @@ const Layout = ({ children }) => {
     };
   }, [isLive, isMarketHours, fetchIndices]);
 
+  // Safety: Force Turn Off Live if Market Closes
   useEffect(() => {
-    if (!isMarketHours && isLive) toggleLive(); 
+    if (!isMarketHours && isLive) {
+      toggleLive(); 
+    }
   }, [isMarketHours]);
 
   return (
     <div className="flex h-screen bg-[#0a0a0c] text-gray-100 font-sans overflow-hidden selection:bg-indigo-500/30">
       
-      {/* --- SPEED UPDATE: Changed duration to 30s --- */}
       <style>{`
         @keyframes marquee {
           0% { transform: translateX(0); }
@@ -128,7 +136,7 @@ const Layout = ({ children }) => {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee 15s linear infinite; /* Increased Speed (Lower seconds = Faster) */
+          animation: marquee 30s linear infinite; 
         }
         .group:hover .animate-marquee {
           animation-play-state: paused;
