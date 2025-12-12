@@ -1,10 +1,18 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const LiveContext = createContext();
 
 export const LiveProvider = ({ children }) => {
-  // Default to false (Manual/Off) or true (Auto/Live) as you prefer
-  const [isLive, setIsLive] = useState(true); 
+  // Initialize state from Local Storage (Default to true if not found)
+  const [isLive, setIsLive] = useState(() => {
+    const savedState = localStorage.getItem('isLiveMode');
+    return savedState !== null ? JSON.parse(savedState) : true;
+  });
+
+  // Save to Local Storage whenever isLive changes
+  useEffect(() => {
+    localStorage.setItem('isLiveMode', JSON.stringify(isLive));
+  }, [isLive]);
 
   const toggleLive = () => setIsLive(prev => !prev);
 
